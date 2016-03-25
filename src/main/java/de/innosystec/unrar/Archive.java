@@ -21,6 +21,7 @@ package de.innosystec.unrar;
 import de.innosystec.unrar.exception.RarException;
 import de.innosystec.unrar.exception.RarException.RarExceptionType;
 import de.innosystec.unrar.io.IReadOnlyAccess;
+import de.innosystec.unrar.io.BlobRandomAccessStream;
 import de.innosystec.unrar.io.ReadOnlyAccessByteArray;
 import de.innosystec.unrar.io.ReadOnlyAccessFile;
 import de.innosystec.unrar.rarfile.AVHeader;
@@ -44,6 +45,8 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -105,6 +108,10 @@ public class Archive implements Closeable {
 
     public static Archive forByteArray(byte[] b) throws IOException {
         return new Archive(new ReadOnlyAccessByteArray(b), b.length);
+    }
+
+    public static Archive forBlob(Blob b) throws IOException, SQLException {
+        return new Archive(new BlobRandomAccessStream(b), b.length());
     }
 
     public Archive(IReadOnlyAccess stream, long length) throws IOException {
