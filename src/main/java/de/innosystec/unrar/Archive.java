@@ -21,6 +21,7 @@ package de.innosystec.unrar;
 import de.innosystec.unrar.exception.RarException;
 import de.innosystec.unrar.exception.RarException.RarExceptionType;
 import de.innosystec.unrar.io.IReadOnlyAccess;
+import de.innosystec.unrar.io.ReadOnlyAccessByteArray;
 import de.innosystec.unrar.io.ReadOnlyAccessFile;
 import de.innosystec.unrar.rarfile.AVHeader;
 import de.innosystec.unrar.rarfile.BaseBlock;
@@ -56,9 +57,10 @@ import java.util.logging.Logger;
  */
 public class Archive implements Closeable {
 
-    private static Logger logger = Logger.getLogger(Archive.class.getName());
+    private static final Logger logger = Logger.getLogger(Archive.class.getName());
 
     private File file;
+    private long length;
 
     private IReadOnlyAccess rof;
 
@@ -97,33 +99,30 @@ public class Archive implements Closeable {
      */
     private long totalPackedRead = 0L;
 
-    public Archive(File file) throws RarException, IOException {
-        this(file, null);
+    public static Archive forFile(File f) throws IOException {
+        return new Archive(new ReadOnlyAccessFile(f), f.length());
     }
 
-    /**
-     * create a new archive object using the given file
-     *
-     * @param file the file to extract
-     * @throws RarException
-     */
-    public Archive(File file, UnrarCallback unrarCallback) throws RarException,
-            IOException {
-        setFile(file);
-        this.unrarCallback = unrarCallback;
+    public static Archive forByteArray(byte[] b) throws IOException {
+        return new Archive(new ReadOnlyAccessByteArray(b), b.length);
+    }
+
+    public Archive(IReadOnlyAccess stream, long length) throws IOException {
         dataIO = new ComprDataIO(this);
+        this.unrarCallback = null;
+        setStream(stream, length);
     }
 
     public File getFile() {
         return file;
     }
 
-    void setFile(File file) throws IOException {
-        this.file = file;
+    private void setStream(IReadOnlyAccess iroa, long length) throws IOException {
+        this.length = length;
         totalPackedSize = 0L;
         totalPackedRead = 0L;
         close();
-        rof = new ReadOnlyAccessFile(file);
+        rof = iroa;
         try {
             readHeaders();
         } catch (Exception e) {
@@ -143,6 +142,11 @@ public class Archive implements Closeable {
             unrarCallback.volumeProgressChanged(totalPackedRead,
                     totalPackedSize);
         }
+    }
+
+    void setFile(File file) throws IOException {
+        this.file = file;
+        setStream(new ReadOnlyAccessFile(file), file.length());
     }
 
     public void bytesReadRead(int count) {
@@ -212,8 +216,7 @@ public class Archive implements Closeable {
         currentHeaderIndex = 0;
         int toRead = 0;
 
-        long fileLength = this.file.length();
-
+//        long fileLength = this.file.length();
         while (true) {
             int size = 0;
             long newpos = 0;
@@ -222,7 +225,7 @@ public class Archive implements Closeable {
             long position = rof.getPosition();
 
             // Weird, but is trying to read beyond the end of the file
-            if (position >= fileLength) {
+            if (position >= length) {
                 break;
             }
 
@@ -380,6 +383,7 @@ public class Archive implements Closeable {
                                             macHeaderbuffer);
                                     System.out.println(macHeader);
                                     headers.add(macHeader);
+
                                     break;
                                 }
                                 // TODO implement other subheaders
@@ -432,7 +436,7 @@ public class Archive implements Closeable {
     /**
      * Extract the file specified by the given header and write it to the supplied output stream
      *
-     * @param hd the header to be extracted
+     * @param header the header to be extracted
      * @param os the outputstream
      * @throws RarException
      */
