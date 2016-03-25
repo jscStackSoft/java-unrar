@@ -5,15 +5,15 @@
  *
  * Source: $HeadURL$
  * Last changed: $LastChangedDate$
- * 
- * the unrar licence applies to all junrar source and binary distributions 
+ *
+ * the unrar licence applies to all junrar source and binary distributions
  * you are not allowed to use this source to re-create the RAR compression algorithm
- * 
+ *
  * Here some html entities which can be used for escaping javadoc tags:
  * "&":  "&#038;" or "&amp;"
  * "<":  "&#060;" or "&lt;"
  * ">":  "&#062;" or "&gt;"
- * "@":  "&#064;" 
+ * "@":  "&#064;"
  */
 package de.innosystec.unrar.io;
 
@@ -28,28 +28,27 @@ import java.io.RandomAccessFile;
  * @author $LastChangedBy$
  * @version $LastChangedRevision$
  */
-public class ReadOnlyAccessFile extends RandomAccessFile
-        implements IReadOnlyAccess{
+public class ReadOnlyAccessFile extends RandomAccessFile implements IReadOnlyAccess {
 
-	/**
-	 * @param file the file
-	 * @throws FileNotFoundException
-	 */
-	public ReadOnlyAccessFile(File file) throws FileNotFoundException {
-		super(file, "r");
-	}
+    /**
+     * @param file the file
+     * @throws FileNotFoundException
+     */
+    public ReadOnlyAccessFile(File file) throws FileNotFoundException {
+        super(file, "r");
+    }
 
-	public int readFully(byte[] buffer, int count) throws IOException {
+    public int readFully(byte[] buffer, int count) throws IOException {
         assert (count > 0) : count;
         this.readFully(buffer, 0, count);
         return count;
     }
 
-	public long getPosition() throws IOException {
+    public long getPosition() throws IOException {
         return this.getFilePointer();
-	}
+    }
 
-	public void setPosition(long pos) throws IOException {
+    public void setPosition(long pos) throws IOException {
         this.seek(pos);
-	}
+    }
 }
