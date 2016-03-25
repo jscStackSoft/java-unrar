@@ -5,68 +5,61 @@
  *
  * Source: $HeadURL$
  * Last changed: $LastChangedDate$
- * 
- * 
- * the unrar licence applies to all junrar source and binary distributions 
+ *
+ *
+ * the unrar licence applies to all junrar source and binary distributions
  * you are not allowed to use this source to re-create the RAR compression algorithm
  *
  * Here some html entities which can be used for escaping javadoc tags:
  * "&":  "&#038;" or "&amp;"
  * "<":  "&#060;" or "&lt;"
  * ">":  "&#062;" or "&gt;"
- * "@":  "&#064;" 
+ * "@":  "&#064;"
  */
 package de.innosystec.unrar.rarfile;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import de.innosystec.unrar.io.Raw;
 
-public class SubBlockHeader 
-extends BlockHeader 
-{
-	private Log logger = LogFactory.getLog(getClass());
-	
-	public static final short SubBlockHeaderSize = 3;
-	
-	private short subType;
-	private byte level;
-	
-	public SubBlockHeader(SubBlockHeader sb)
-	{
-		super(sb);
-		subType = sb.getSubType().getSubblocktype();
-		level = sb.getLevel();
-	}
-	
-	public SubBlockHeader(BlockHeader bh, byte[] subblock)
-	{
-		super(bh);
-		int position = 0;
-		subType = Raw.readShortLittleEndian(subblock, position);
-		position +=2;
-		level |= subblock[position]&0xff;
-	}
+public class SubBlockHeader extends BlockHeader {
 
-	/**
-	 * @return
-	 */
-	public byte getLevel() {
-		return level;
-	}
+    public static final short SubBlockHeaderSize = 3;
 
-	/**
-	 * @return
-	 */
-	public SubBlockHeaderType getSubType() {
-		return SubBlockHeaderType.findSubblockHeaderType(subType);
-	}
+    private short subType;
+    private byte level;
 
-	public void print()
-	{
-		super.print();
-		logger.info("subtype: "+getSubType());
-		logger.info("level: "+level);
-	}
+    public SubBlockHeader(SubBlockHeader sb) {
+        super(sb);
+        subType = sb.getSubType().getSubblocktype();
+        level = sb.getLevel();
+    }
+
+    public SubBlockHeader(BlockHeader bh, byte[] subblock) {
+        super(bh);
+        int position = 0;
+        subType = Raw.readShortLittleEndian(subblock, position);
+        position += 2;
+        level |= subblock[position] & 0xff;
+    }
+
+    /**
+     * @return
+     */
+    public byte getLevel() {
+        return level;
+    }
+
+    /**
+     * @return
+     */
+    public SubBlockHeaderType getSubType() {
+        return SubBlockHeaderType.findSubblockHeaderType(subType);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder(super.toString());
+        builder.append("\nsubtype: ").append(getSubType());
+        builder.append("\nlevel: ").append(level);
+        return super.toString();
+    }
 }

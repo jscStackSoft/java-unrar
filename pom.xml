@@ -9,14 +9,6 @@
     <name>Java UnRar</name>
     <url>http://sourceforge.net/projects/java-unrar</url>
 
-    <dependencies>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>

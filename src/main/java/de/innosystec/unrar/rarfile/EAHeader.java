@@ -5,21 +5,18 @@
  *
  * Source: $HeadURL$
  * Last changed: $LastChangedDate$
- * 
- * 
- * the unrar licence applies to all junrar source and binary distributions 
+ *
+ *
+ * the unrar licence applies to all junrar source and binary distributions
  * you are not allowed to use this source to re-create the RAR compression algorithm
  *
  * Here some html entities which can be used for escaping javadoc tags:
  * "&":  "&#038;" or "&amp;"
  * "<":  "&#060;" or "&lt;"
  * ">":  "&#062;" or "&gt;"
- * "@":  "&#064;" 
+ * "@":  "&#064;"
  */
 package de.innosystec.unrar.rarfile;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import de.innosystec.unrar.io.Raw;
 
@@ -27,66 +24,63 @@ import de.innosystec.unrar.io.Raw;
  * extended archive CRC header
  *
  */
-public class EAHeader 
-extends SubBlockHeader 
-{
-	private Log logger = LogFactory.getLog(getClass());
-	
-	public static final short EAHeaderSize = 10;
-	
-	private int unpSize;
-	private byte unpVer;
-	private byte method;
-	private int EACRC;
-	
-	public EAHeader(SubBlockHeader sb, byte[] eahead)
-	{
-		super(sb);
-		int pos = 0;
-		unpSize = Raw.readIntLittleEndian(eahead, pos);
-		pos+=4;
-		unpVer |= eahead[pos]&0xff;
-		pos++;
-		method |= eahead[pos]&0xff;
-		pos++;
-		EACRC = Raw.readIntLittleEndian(eahead, pos);
-	}
+public class EAHeader
+        extends SubBlockHeader {
 
-	/**
-	 * @return the eACRC
-	 */
-	public int getEACRC() {
-		return EACRC;
-	}
+    public static final short EAHeaderSize = 10;
 
-	/**
-	 * @return the method
-	 */
-	public byte getMethod() {
-		return method;
-	}
+    private int unpSize;
+    private byte unpVer;
+    private byte method;
+    private int EACRC;
 
-	/**
-	 * @return the unpSize
-	 */
-	public int getUnpSize() {
-		return unpSize;
-	}
+    public EAHeader(SubBlockHeader sb, byte[] eahead) {
+        super(sb);
+        int pos = 0;
+        unpSize = Raw.readIntLittleEndian(eahead, pos);
+        pos += 4;
+        unpVer |= eahead[pos] & 0xff;
+        pos++;
+        method |= eahead[pos] & 0xff;
+        pos++;
+        EACRC = Raw.readIntLittleEndian(eahead, pos);
+    }
 
-	/**
-	 * @return the unpVer
-	 */
-	public byte getUnpVer() {
-		return unpVer;
-	}
-	
-	public void print()
-	{
-		super.print();
-		logger.info("unpSize: "+unpSize);
-		logger.info("unpVersion: " + unpVer);
-		logger.info("method: "+method);
-		logger.info("EACRC:" + EACRC);
-	}
+    /**
+     * @return the eACRC
+     */
+    public int getEACRC() {
+        return EACRC;
+    }
+
+    /**
+     * @return the method
+     */
+    public byte getMethod() {
+        return method;
+    }
+
+    /**
+     * @return the unpSize
+     */
+    public int getUnpSize() {
+        return unpSize;
+    }
+
+    /**
+     * @return the unpVer
+     */
+    public byte getUnpVer() {
+        return unpVer;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder(super.toString());
+        builder.append("\nunpSize: ").append(unpSize);
+        builder.append("\nunpVersion: ").append(unpVer);
+        builder.append("\nmethod: ").append(method);
+        builder.append("\nEACRC:").append(EACRC);
+        return builder.toString();
+    }
 }
-
